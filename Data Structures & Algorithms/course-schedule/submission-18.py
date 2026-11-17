@@ -1,0 +1,29 @@
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        courses = {i: set() for i in range(numCourses)}
+        for crs, pre in prerequisites:
+            courses[crs].add(pre)
+        visited = set()
+        def dfs(crs):
+            if crs in courses[crs]:
+                return False
+            if len(courses[crs]) == 0: # We can take this course
+                return True
+            elif crs in visited: # Cycle -> False
+                return False
+            # This course is currently trying to have its prereqs satisfied
+            visited.add(crs)
+            
+            for prereq in courses[crs]:
+                if not dfs(prereq):
+                    return False
+            # We have taken all prereqs of this course
+            visited.remove(crs)
+            courses[crs] = set()
+            return True
+
+        for crs in courses:
+            if not dfs(crs):
+                return False
+        
+        return True
